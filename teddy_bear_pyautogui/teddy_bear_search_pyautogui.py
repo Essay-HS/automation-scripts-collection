@@ -1,30 +1,32 @@
-import pyautogui
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import time
-import os
 
-# Give yourself a moment to switch to the correct screen
+
+# Use Selenium to open Firefox and navigate to Google.com
+driver = webdriver.Firefox()
+driver.get("https://duckduckgo.com")
+
 time.sleep(2)
 
-# Maximize the Firefox window manually before running or automate it:
-# pyautogui.hotkey("command", "space")  # Open Spotlight (macOS)
-# pyautogui.write("firefox")
-# pyautogui.press("return")
-# time.sleep(2)
+wait = WebDriverWait(driver, 10)
+search_box = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@id='searchbox_input']")))
+search_box.send_keys("teddy bear")
+time.sleep(2)
+search_box.send_keys(Keys.RETURN)
+time.sleep(1.5)
 
-# Move mouse to the Firefox search bar and click
-pyautogui.click(40, 1040)  # Replace with your actual screen coordinates
 
-# Type the search query
-pyautogui.write("teddy bear")
-pyautogui.press("return")
+first_result = wait.until(EC.element_to_be_clickable(
+    (By.XPATH, "/html/body/div[2]/div[6]/div[4]/div/div/div/div[2]/section[1]/ol/li[2]/article/div[3]/h2/a")
+))
+first_result.click()
 
-# Wait for search results to load
-time.sleep(4)
+driver.maximize_window()
+driver.save_full_page_screenshot("teddy_bear_search.png")
 
-# Scroll down to ensure first result is visible
-pyautogui.scroll(-500)
+exit()
 
-# Screenshot the page
-screenshot_path = os.path.expanduser("~/Desktop/teddy_bear_search_pyauto.png")
-pyautogui.screenshot(screenshot_path)
-print(f"✅ Screenshot saved to {screenshot_path}")
